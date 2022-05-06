@@ -22,49 +22,48 @@ import java.util.Collections;
 import java.util.Random;
 
 @SpringBootApplication
-public class SweetBenApplication implements CommandLineRunner {
-	@Autowired
-	private ProductRepository productRepository;
-	@Autowired
-	private CategoryRepository categoryRepository;
-	@Autowired
-	private AccountService accountService;
-	@Autowired
-	private RepositoryRestConfiguration repositoryRestConfiguration;
+public class SweetBenApplication {
+
 
 
 	public static void main(String[] args) {
 
 		SpringApplication.run(SweetBenApplication.class, args);
 	}
-
-	@Override
-	public void run(String... args) throws Exception {
-		repositoryRestConfiguration.exposeIdsFor(Product.class, Category.class);
-		accountService.addRole(new AppRole(null,"USER"));
-		accountService.addRole(new AppRole(null,"ADMIN"));
-		accountService.addUser(new AppUser(null,"user1","1234",new ArrayList<>()));
-		accountService.addUser(new AppUser(null,"user2","1234",new ArrayList<>()));
-
-		accountService.addRoleToUser("user1","USER");
-
-		categoryRepository.save(new Category(null,"Prestige",null,null,null));
-		categoryRepository.save(new Category(null,"Amende",null,null,null));
-		categoryRepository.save(new Category(null,"Beldi",null,null,null));
-		Random rnd=new Random();
-		categoryRepository.findAll().forEach(c->{
-			for (int i = 0; i <10 ; i++) {
-				Product p=new Product();
-				p.setName(RandomString.make(18));
-				p.setCurrentPrice(100+rnd.nextInt(10000));
-				p.setAvailable(rnd.nextBoolean());
-				p.setPromotion(rnd.nextBoolean());
-				p.setSelected(rnd.nextBoolean());
-				p.setCategory(c);
-				p.setPhotoName("unknown.png");
-				productRepository.save(p);
-			}
-		});
-
+	@Bean
+	PasswordEncoder passwordEncoder(){
+		return new BCryptPasswordEncoder();
 	}
+	@Bean
+	CommandLineRunner start(AccountService accountService,ProductRepository productRepository,CategoryRepository categoryRepository,RepositoryRestConfiguration repositoryRestConfiguration){
+		return args-> {
+			repositoryRestConfiguration.exposeIdsFor(Product.class, Category.class);
+			accountService.addRole(new AppRole(null, "USER"));
+			accountService.addRole(new AppRole(null, "ADMIN"));
+			accountService.addUser(new AppUser(null, "user1", "1234", new ArrayList<>()));
+			accountService.addUser(new AppUser(null, "user2", "1234", new ArrayList<>()));
+
+			accountService.addRoleToUser("user1", "USER");
+
+			categoryRepository.save(new Category(null, "Prestige", null, null, null));
+			categoryRepository.save(new Category(null, "Amende", null, null, null));
+			categoryRepository.save(new Category(null, "Beldi", null, null, null));
+			Random rnd = new Random();
+			categoryRepository.findAll().forEach(c -> {
+				for (int i = 0; i < 10; i++) {
+					Product p = new Product();
+					p.setName(RandomString.make(18));
+					p.setCurrentPrice(100 + rnd.nextInt(10000));
+					p.setAvailable(rnd.nextBoolean());
+					p.setPromotion(rnd.nextBoolean());
+					p.setSelected(rnd.nextBoolean());
+					p.setCategory(c);
+					p.setPhotoName("unknown.png");
+					productRepository.save(p);
+				}
+			});
+		};
+	}
+
+
 }
