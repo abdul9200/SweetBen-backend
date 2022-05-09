@@ -31,4 +31,5 @@ public class CatalogueRestController {
         Files.write(Paths.get(System.getProperty("user.home")+"/ecom/products/"+p.getPhotoName()),file.getBytes());
         productRepository.save(p);
     }
+
 }

@@ -30,7 +30,10 @@ public class AccountServiceImpl implements AccountService {
 
         String p = appUser.getPassword();
         appUser.setPassword(passwordEncoder.encode(p));
+        AppRole appRole =appRoleRepository.findByRoleName("USER");
+        appUser.getAppRoles().add(appRole);
         return appUserRepository.save(appUser);
+
     }
 
     @Override
@@ -55,5 +58,12 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<AppUser> listUsers() {
         return appUserRepository.findAll();
+    }
+
+    @Override
+    public void deleteUser(String userName) {
+        AppUser appUser=loadUserByUsername(userName);
+        appUserRepository.delete(appUser);
+
     }
 }

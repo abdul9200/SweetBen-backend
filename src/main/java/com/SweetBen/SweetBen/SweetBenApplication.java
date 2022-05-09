@@ -14,6 +14,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -22,6 +23,8 @@ import java.util.Collections;
 import java.util.Random;
 
 @SpringBootApplication
+@EnableGlobalMethodSecurity(prePostEnabled = true,securedEnabled = true)
+
 public class SweetBenApplication {
 
 
@@ -40,10 +43,12 @@ public class SweetBenApplication {
 			repositoryRestConfiguration.exposeIdsFor(Product.class, Category.class);
 			accountService.addRole(new AppRole(null, "USER"));
 			accountService.addRole(new AppRole(null, "ADMIN"));
+			accountService.addRole(new AppRole(null, "MODERATEUR"));
+			accountService.addRole(new AppRole(null, "ROOT"));
 			accountService.addUser(new AppUser(null, "user1", "1234", new ArrayList<>()));
 			accountService.addUser(new AppUser(null, "user2", "1234", new ArrayList<>()));
 
-			accountService.addRoleToUser("user1", "USER");
+			
 
 			categoryRepository.save(new Category(null, "Prestige", null, null, null));
 			categoryRepository.save(new Category(null, "Amende", null, null, null));
